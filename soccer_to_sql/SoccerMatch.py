@@ -89,8 +89,15 @@ class SoccerMatch():
         :return:
         """
 
-        self.team1_score = scores[0]
-        self.team2_score = scores[1]
+        try:
+
+            self.team1_score = scores[0]
+            self.team2_score = scores[1]
+        except IndexError as e:
+            print("scores not available")
+            self.team1_score = -1
+            self.team2_score = -1
+
 
 
 
