@@ -113,6 +113,10 @@ class Scraper():
                 participants = self.get_participants(row)
                 this_match.set_teams(participants)
                 scores = self.get_scores(row)
+
+                # ADDED
+                this_match.set_scores(scores)
+
                 this_match.set_outcome_from_scores(scores)
                 odds = self.get_odds(row)
                 this_match.set_odds(odds)

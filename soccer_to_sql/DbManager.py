@@ -25,6 +25,8 @@ class DatabaseManager():
                 pass
         self.conn = sqlite3.connect(DB_FILENAME)
         self.cursor = self.conn.cursor()
+
+        # ADDED team1_score, and team2_score columns
         if is_first_run:
             self.cursor.execute('''DROP TABLE IF EXISTS matches''')
             self.cursor.execute('''CREATE TABLE matches
@@ -32,10 +34,42 @@ class DatabaseManager():
                                     retrieved_from_url text, start_time integer,
                                     end_time integer, team1 text, team2 text,
                                     outcome text, team1_odds real,
-                                    team2_odds real, draw_odds real)''')
+                                    team2_odds real, draw_odds real, team1_score integer, team2_score integer )''')
             self.conn.commit()
 
     def add_soccer_match(self, league, retrieved_from_url, match):
+        """
+        Insert a soccer match entry into the database.
+
+        Args:
+            league (dict): The dict result from parsing a league.json file.
+
+            retrieved_from_url (str): URL this match was retrieved from.
+
+            match (object): The SoccerMatch to insert into the database.
+        """
+
+        sql_str = "INSERT INTO matches VALUES ('"
+        sql_str += league["league"] + "', '"
+        sql_str += league["area"] + "', '"
+        sql_str += retrieved_from_url + "', "
+        sql_str += str(match.get_start_time_unix_int()) + ", "
+        sql_str += str(match.get_end_time_unix_int()) + ", '"
+        sql_str += match.get_team1_string() + "', '"
+        sql_str += match.get_team2_string() + "', '"
+        sql_str += match.get_outcome_string() + "', '"
+        sql_str += str(match.get_team1_odds()) + "', '"
+        sql_str += str(match.get_team2_odds()) + "', '"
+        sql_str += str(match.get_draw_odds()) + "', '"
+
+        # ADDED
+        sql_str += str(match.get_team1_score()) + "', '"
+        sql_str += str(match.get_team2_score()) + "')"
+
+        self.cursor.execute(sql_str)
+        self.conn.commit()
+
+    def add_soccer_match_backup(self, league, retrieved_from_url, match):
         """
         Insert a soccer match entry into the database.
 

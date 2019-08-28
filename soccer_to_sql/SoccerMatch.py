@@ -22,6 +22,10 @@ class SoccerMatch():
         self.draw_odds = ""
         self.outcome = ""
 
+        # Added
+        self.team1_score = ""
+        self.team2_score = ""
+
     def set_start(self, start_time_str):
         """
         Set the match's start time from a formatted string.
@@ -76,6 +80,19 @@ class SoccerMatch():
         self.team1_odds = odds[0]
         self.draw_odds = odds[1]
         self.team2_odds = odds[2]
+
+    # ADDED
+    def set_scores(self, scores):
+        """
+        Set the score for team 1 and team 2
+        :param scores: list of string containing scores
+        :return:
+        """
+
+        self.team1_score = scores[0]
+        self.team2_score = scores[1]
+
+
 
     def get_start_time_unix_int(self):
         """
@@ -141,6 +158,29 @@ class SoccerMatch():
         """
 
         return self.team2_odds
+
+    # ADDED
+    def get_team1_score(self):
+        """
+        Get the score of a team 1 win.
+
+        Return:
+            (str) Team 1 score.
+        """
+
+        return self.team1_score
+
+    # ADDED
+    def get_team2_score(self):
+        """
+        Get the score of a team 2 win.
+
+        Return:
+            (str) Team 2 score.
+        """
+
+        return self.team2_score
+
 
     def get_draw_odds(self):
         """
