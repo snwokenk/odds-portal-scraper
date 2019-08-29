@@ -12,7 +12,7 @@ from SoccerMatch import SoccerMatch
 
 class Scraper():
 
-    def __init__(self, league_json, initialize_db):
+    def __init__(self, league_json, initialize_db, csv_manager=None):
         """
         Constructor. Launch the web driver browser, initialize the league
         field by parsing the representative JSON file, and connect to the
@@ -22,10 +22,12 @@ class Scraper():
             league_json (str): JSON string of the league to associate with the
                 Scraper.
             initialize_db (bool): Should the database be initialized?
+            csv_manager: if run_save_to_csv is run then this is instance of CSVFileMangager else is None
         """
 
         self.browser = webdriver.Chrome("./chromedriver/chromedriver")
         self.league = self.parse_json(league_json)
+        self.csv_manager = csv_manager
         self.db_manager = DatabaseManager(initialize_db)
 
     def parse_json(self, json_str):
@@ -41,7 +43,7 @@ class Scraper():
 
         return json.loads(json_str)
 
-    def scrape_all_urls(self, do_verbose_output=False):
+    def scrape_all_urls(self, do_verbose_output=False, ):
         """
         Call the scrape method on every URL in this Scraper's league field, in
         order, then close the browser.
@@ -58,7 +60,7 @@ class Scraper():
         for url in self.league["urls"]:
             # loop through all pages in that season
             page = 1
-            while self.scrape_url("#/page/".join((url, "{}/".format(page)))):
+            while self.scrape_url("#/page/".join((url, "{}/".format(page))),):
                 if do_verbose_output:
                     print("Scraped page", page)
                 page += 1
@@ -79,6 +81,7 @@ class Scraper():
 
         Args:
             url (str): URL to scrape data from.
+            save_to_csv(bool): if true, then result is saved to a csv file
 
         Returns:
             Whether data existed for that season.
@@ -120,7 +123,10 @@ class Scraper():
                 this_match.set_outcome_from_scores(scores)
                 odds = self.get_odds(row)
                 this_match.set_odds(odds)
-                self.db_manager.add_soccer_match(self.league, url, this_match)
+                if self.csv_manager:
+                    self.csv_manager.add_soccer_match(self.league, url, this_match)
+                else:
+                    self.db_manager.add_soccer_match(self.league, url, this_match)
 
         return True
 
